@@ -164,7 +164,9 @@ int evaluate() // get postfix notation of infix typed by user
     {
         if (s[i].getType() == OP) 
         {
-            if (i < 2) throw string ("Invalid expression");
+            if (i < 2) throw string("Invalid expression");
+            if (s[i-1].getType() != NUM) throw string("Invalid expression");
+            if (s[i-2].getType() != NUM) throw string("Invalid expression");
         } // if getType == OP
     } // for loop
 } // evaluate func
