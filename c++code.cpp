@@ -1,7 +1,7 @@
 // File name: c++code.cpp
 // Purpose: implementing mathematical expression evaluations in C++
 // Author: Madeline Krehely
-// Date Modified: 11/21/24
+// Date Modified: 11/24/24
 
 #include <iostream>
 #include <stack>
@@ -12,10 +12,10 @@ using namespace std;
 enum ElementType {NUM, OP};
 class Element 
 {
-    private:
-        string v;
-        ElementType type;
-    public:
+private:
+    string v;
+    ElementType type;
+public:
     string getString() {return v;}
     ElementType getType() {return type;}
     Element(string s, ElementType t)
@@ -133,7 +133,7 @@ void postfix(string s) // convert infix to postfix
             } // while
         } // if isOperator
 
-        else throw s[i] + string("Invalid character encountered in experession.");
+        else throw s[i] + string("Invalid character encountered in expression.");
 
         while (!stk2.empty()) // move leftovers into stk1
         {
@@ -167,6 +167,63 @@ int evaluate() // get postfix notation of infix typed by user
             if (i < 2) throw string("Invalid expression");
             if (s[i-1].getType() != NUM) throw string("Invalid expression");
             if (s[i-2].getType() != NUM) throw string("Invalid expression");
+
+            int a = stoi(s[i-1].getString()); // get prev index #
+            int b = stoi(s[i-2].getString()); // get prev prev index #
+            int r; // store result
+            
+            string op = s[i].getString(); // get operator
+            if (op == "+") r = (a + b);
+            else if (op == "-") r = (b - a);
+            else if (op == "*") r = (b * a);
+            else if (op == "/")
+            {
+                if (a == 0) throw string("Division by zero");
+                r = (b/a);
+            } // / operator
+            else if (op == "^") r = pow(a, b);
+
+            s[i-2] = Element(to_string(r), NUM); // shift array twice from i-2
+            for (int j = (i + 1); j < size; j++)
+            {
+                s[j - 2] = s[j];
+            }
+            size -= 2; // adjust size
+            i -= 2; // adjust i
         } // if getType == OP
     } // for loop
+
+    return stoi(s[0].getString()); // return final
 } // evaluate func
+
+int main() // main
+{
+    string s;
+
+    cout << "Enter your expression: ";
+    getline(cin, s);
+
+    int v = 0;
+    try
+    {
+        {
+            postfix(s); // call postfix
+            v = evaluate();
+            cout << "v = " << v << endl;
+        }
+    }
+    catch (string s)
+    {
+        cout << s << endl;
+    }
+    
+    return 0;
+}
+
+// test cases aren't working correctly??? not sure the best way to approach to fix the program
+
+// test case 1 is returning invalid instead of 13
+// test case 2 returns invalid parenthesis instead of 27
+// test case 3 returns correctly (invalid)
+// test case 4 also returns mismatched parenthesis instead of division by 0
+// test case 5 returns correctly (invalid character found)
